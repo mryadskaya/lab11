@@ -61,7 +61,7 @@ def list(birthday):
                 idx,
                 i.get('name', ''),
                 i.get('zodiac', ''),
-                i.get('data', '')
+                i.get('data', '0')
             )
         )
     print(line)
