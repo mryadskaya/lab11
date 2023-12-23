@@ -3,133 +3,126 @@
 
 import sys
 
-def help1():
-    """"
-    Функция для вывода списка команд
+def get_worker():
     """
-    # Вывести справку о работе с программой.
-    print("Список команд:\n")
-    print("add - добавить информацию;")
-    print("list - вывести список ;")
-    print("select <тип> - вывод на экран фамилия, имя; знак Зодиака; дата рождения ")
-    print("help - отобразить справку;")
-    print("exit - завершить работу с программой.")
+   Запросить данные о работнике.
+   """
+    name = input("Фамилия и инициалы? ")
+    post = input("знак зодиака? ")
+    year = int(input("Год поступления? "))
 
-
-def add1():
-    """"
-    Функция для добавления информации о новых рейсах
-    """
-    # Запросить данные о работнике.
-    name = input("Фамилия и имя? ")
-    zodiac = input("Знак зодиака? ")
-    date = int(input("дата рождения? "))
     # Создать словарь.
-    i = {
+    return {
         'name': name,
-        'zodiac': zodiac,
-        'data': date,
+        'знак зодиака': post,
+        'year': year,
     }
 
-    return i
 
-
-def error1():
-    """"
-    функция для неопознанных команд
+def display_workers(staff):
     """
-    print(f"Неизвестная команда {command}")
-
-
-def list(birthday):
-    """"
-    Функция для вывода списка добавленных рейсов
-    """
-    # Заголовок таблицы.
-    line = '+-{}-+-{}-+-{}-+-{}-+'.format(
-        '-' * 4,
-        '-' * 30,
-        '-' * 20,
-        '-' * 8
-    )
-    print(line)
-
-    # Вывести данные о всех сотрудниках.
-    for idx, i in enumerate(birthday, 1):
+   Отобразить список работников.
+   """
+    # Проверить, что список работников не пуст.
+    if staff:
+        # Заголовок таблицы.
+        line = '+-{}-+-{}-+-{}-+-{}-+'.format(
+            '-' * 4,
+            '-' * 30,
+            '-' * 20,
+            '-' * 8
+        )
+        print(line)
         print(
-            '| {:>4} | {:<30} | {:<20} | {:>8} |'.format(
-                idx,
-                i.get('name', ''),
-                i.get('zodiac', ''),
-                i.get('data', '0')
+            '| {:^4} | {:^30} | {:^20} | {:^8} |'.format(
+                "№",
+                "Ф.И.О.",
+                "знак зодиака",
+                "Год"
             )
         )
-    print(line)
+        print(line)
 
-
-def select(command, birthday):
-    """""
-    Функция для получения фамилии и знака зодиака.
-    """
-    # Разбить команду на части для выделения номера года.
-    parts = input("Введите значение: ")
-    # Проверить сведения работников из списка.
-    count = 0
-
-    for i in birthday:
-        for k, v in i.items():
-
-            if v == parts:
-                print("Пункт назначения - ", i["name"])
-                print("знак зодиака - ", i["zodiac"])
-                count += 1
-    # Если счетчик равен 0, то работники не найдены.
-
-    if count == 0:
+        # Вывести данные о всех сотрудниках.
+        for idx, worker in enumerate(staff, 1):
+            print(
+                '| {:>4} | {:<30} | {:<20} | {:>8} |'.format(
+                    idx,
+                    worker.get('name', ''),
+                    worker.get('знак зодиака', ''),
+                    worker.get('year', 0)
+                )
+            )
+        print(line)
         print("информации не найдено.")
 
 
-def main():
-    """"
-    Главная функция программы.
+def select_workers(staff, period):
     """
-    print("Список команд:\n")
-    print("add - добавить информацию;")
-    print("list - вывести список ;")
-    print("select <тип> - ввывод на экран фамилия, имя; знак Зодиака; дата рождения")
-    print("help - отобразить справку;")
-    print("exit - завершить работу с программой.")
-    # Список работников.
-    birthday = []
-    # Организовать бесконечный цикл запроса команд.
-    while True:
-        # Запросить команду из терминала.
-        command = input(">>> ").lower()
-        # Выполнить действие в соответствие с командой.
+    Выбрать работников с заданным стажем.
+    """
+    # Получить текущую дату.
+    today = date.today()
 
-        match command:
-            case 'exit':
+    # Сформировать список работников.
+    result = []
+    for employee in staff:
+        if today.year - employee.get('year', today.year) >= period:
+            result.append(employee)
+
+    # Возвратить список выбранных работников.
+    return result
+
+
+def main():
+        """
+       Главная функция программы.
+       """
+        # Список работников.
+        workers = []
+        # Организовать бесконечный цикл запроса команд.
+        while True:
+            # Запросить команду из терминала.
+            command = input(">>> ").lower()
+            # Выполнить действие в соответствие с командой.
+
+            if command == 'exit':
                 break
 
-            case 'add':
+            elif command == 'add':
+                # Запросить данные о работнике.
+                worker = get_worker()
                 # Добавить словарь в список.
-                i = add1()
-                birthday.append(i)
+                workers.append(worker)
                 # Отсортировать список в случае необходимости.
-                if len(birthday) > 1:
-                    birthday.sort(key=lambda item: item.get('data', ''))
+                if len(workers) > 1:
+                     workers.sort(key=lambda item: item.get('name', ''))
 
-            case 'list':
-                list(birthday)
+            elif command == 'list':
+                # Отобразить всех работников.
+                display_workers(workers)
 
-            case 'select':
-                select(command, birthday)
+            elif command.startswith('select '):
+                # Разбить команду на части для выделения стажа.
+                parts = command.split(' ', maxsplit=1)
+                # Получить требуемый стаж.
+                period = int(parts[1])
+                # Выбрать работников с заданным стажем.
+                selected = select_workers(workers, period)
+                # Отобразить выбранных работников.
+                display_workers(selected)
 
-            case 'help':
-                help1()
+            elif command == 'help':
+                # Вывести справку о работе с программой.
+                print("Список команд:\n")
+                print("add - добавить работника;")
+                print("list - вывести список работников;")
+                print("select <стаж> - запросить работников со стажем;")
+                print("help - отобразить справку;")
+                print("exit - завершить работу с программой.")
 
-            case _:
-                error1()
+            else:
+                print(f"Неизвестная команда {command}", file=sys.stderr)
 
 
 if __name__ == '__main__':
